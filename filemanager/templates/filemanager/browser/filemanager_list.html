@@ -1,0 +1,127 @@
+{% extends "filemanager/filemanager_base.html" %}
+
+{% load i18n static %}
+
+{% block content %}
+
+{% include "filemanager/filemanager_breadcrumbs.html" %}
+<br>
+    <div class="row">
+
+        <div class="col-sm-6">
+          <button id="create-directory-btn" data-href="{% url 'filemanager:create-directory' %}?path={{path}}{% if popup %}&amp;popup=1{% endif %}" class="btn btn-primary">Create Directory</button>
+          <button id ="upload-modal-btn" data-href="{% url 'filemanager:upload' %}?path={{path}}{% if popup %}&amp;popup=1{% endif %}" class="btn btn-default">{% trans "Upload" %}</button>
+          <button id="download-btn" class="btn btn-default">{% trans "Download" %}</button>
+          <button id="rename-modal-btn" data-href="{% url 'filemanager:rename' %}?path={{path}}{% if popup %}&amp;popup=1{% endif %}" class="btn btn-default">{% trans "Rename" %}</button>
+          <button id="delete-modal-btn" data-href="{% url 'filemanager:delete' %}?path={{path}}{% if popup %}&amp;popup=1{% endif %}" class="btn btn-danger">{% trans "Delete" %}</button>
+        </div>
+
+        <div class="col-sm-6">
+             <span class="pull-right">
+                <form class="form-inline" id="searchform" action="" method="get" accept-charset="utf-8">
+                    <div class="search-panel form-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                <span id="search_concept">Filter by</span> <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                              <li><a href="#everywhere">Search Everywhere</a></li>
+                              <li class="divider"></li>
+                              <li><a href="#here">Search Here</a></li>
+                            </ul>
+                        </div>
+                    <div class="form-group">
+                        <input type="hidden" name="search_param" id="search_param" value="everywhere">
+                        <input class="search-query form-control" name="q" id="searchbox" type="text" placeholder="Search">
+                        <button class="btn btn-danger" type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </span>
+        </div>
+
+
+<br>
+<br>
+<br>
+<table class="table table-hover" id="directory-listing">
+  <thead>
+    <tr>
+      {% if popup %}<th>{% trans "Select" %}</th>{% endif %}
+      <th><input type="checkbox" class="checkAll" name="checkAll" /></th>
+      <th >{% trans "Type" %}</th>
+      <th>{% trans "Name" %}</th>
+      <th>{% trans "Size" %}</th>
+      <th>{% trans "Date" %}</th>
+      {% if not popup %}<th>{% trans "Info" %}</th>{% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for file in files %}
+        {% if file.filetype == "Directory" %}
+        <tr  data-href="?path={{file.filepath}}{% if popup %}&amp;popup=1{% endif %}">
+          {% if popup %}
+          <a href="?path={{file.filepath}}{% if popup %}&amp;popup=1{% endif %}">
+          <td></td>
+          {% endif %}
+          <td><input class="checkbox" type="checkbox" id="check-dir" data-url="{{file.fileurl}}{% if popup %}&amp;popup=1{% endif %}"/></td>
+          <td><span><i class="fa fa-folder fa-fw"></i></span></td>
+
+          <td class="clickable-row">{{file.filename}}</td>
+          <td>{{file.filesize}}</td>
+          <td>{{file.filedate}}</td>
+          </a>
+            {% if not popup %}<td><a class="file-info-button" href="#" data-href="{% url 'filemanager:detail' %}?path={{file.filepath}}"><span><i class="fa fa-info-circle"></i></span></a></td>{% endif %}
+        </tr>
+
+        {% else %}
+        <tr data-href="{{file.fileurl}}{% if popup %}&amp;popup=1{% endif %}">
+          {% if popup %}
+          <a href="?path={{file.filepath}}{% if popup %}&amp;popup=1{% endif %}">
+          <td><a href="javascript: Filemanager.select('{{file.filepath}}');">{% trans "Select" %}</a></td>
+          {% endif %}
+          <td><input class="checkbox" type="checkbox" id="check-file" data-url="{{file.fileurl}}{% if popup %}&amp;popup=1{% endif %}"/></td>
+          <td ><span><i class="fa fa-file-o fa-fw"></i></span></td>
+          <td class="clickable-row">{{file.filename}}</td>
+          <td>{{file.filesize}}</td>
+          <td>{{file.filedate}}</td>
+          </a>
+            {% if not popup %}<td ><a class="file-info-button" href="#" data-href="{% url 'filemanager:detail'%}?path={{file.filepath}}"><span><i class="fa fa-info-circle"></i></span></a></td>{% endif %}
+        </tr>
+        {% endif %}
+    {% empty %}
+    <tr>
+      <td colspan="5">
+        {{ empty }}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if popup %}
+<script src="{% static "js/filemanager.js" %}"></script>
+{% endif %}
+
+    {% include 'filemanager/create_directory_modal.html' %}
+    {% include 'filemanager/file_info_modal.html' %}
+    {% include 'filemanager/upload_modal.html' %}
+    {% include 'filemanager/rename_modal.html' %}
+    {% include 'filemanager/remove_modal.html' %}
+    <br>
+
+    <br>
+    <br>
+
+
+<script src="{% static 'js/other.js' %}"></script>
+<script src="{% static 'js/checkbox.js' %}"></script>
+<script src="{% static 'js/jszip-utils.js' %}"></script>
+<script src="{% static 'js/zip_down.js' %}"></script>
+<script src="{% static 'js/FileSaver.js' %}"></script>
+<script src="{% static 'js/js-search.js' %}"></script>
+
+<script src="{% static 'js/vendor/jquery.ui.widget.js' %} "></script>
+<script src="{% static 'js/jquery.iframe-transport.js' %} "></script>
+<script src="{% static 'js/jquery.fileupload.js' %} "></script>
+{% endblock %}

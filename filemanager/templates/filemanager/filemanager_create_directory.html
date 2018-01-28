@@ -1,0 +1,17 @@
+{% extends "filemanager/filemanager_base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+{% include "filemanager/filemanager_breadcrumbs.html" %}
+
+    <form class="form-inline" method="post" action="{% url 'filemanager:create-directory' %}?path={{path}}{% if popup %}&amp;popup=1{% endif %}">
+              {% csrf_token %}
+              <input type="hidden" name="path" value="{{path}}">
+              <div class="form-group">
+                  <label for="id_directory_name">Directory name:</label>
+                  <input class="form-control" type="text" name="directory_name" required id="id_directory_name" />
+              </div>
+              <button type="submit" class="btn btn-default">Create Directory</button>
+    </form>
+{% endblock %}
